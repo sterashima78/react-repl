@@ -313,14 +313,7 @@ function processHtmlFile(
         content,
         filename,
       )
-      processChildFiles(
-        store,
-        importedFiles,
-        hasDynamicImport,
-        deps,
-        seen,
-        false,
-      )
+      processChildFiles(store, importedFiles, hasDynamicImport, deps, seen)
       jsCode += '\n' + code
       return ''
     })

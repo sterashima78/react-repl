@@ -18,7 +18,7 @@ import { compileModulesForPreview } from './moduleCompiler'
 import type { Props } from '../Repl.vue'
 import { injectKeyStore } from '../../src/types'
 
-const props = defineProps<{ show: boolean }>()
+defineProps<{ show: boolean }>()
 
 const store = inject(injectKeyStore)!
 const clearConsole = inject<Ref<boolean>>('clear-console')!
@@ -179,18 +179,6 @@ async function updatePreview() {
   }
   runtimeError.value = null
   runtimeWarning.value = null
-
-  if (store.vueVersion) {
-    const [major, minor, patch] = store.vueVersion
-      .split('.')
-      .map((v) => parseInt(v, 10))
-    if (major === 3 && (minor < 2 || (minor === 2 && patch < 27))) {
-      alert(
-        `The selected version of Vue (${store.vueVersion}) does not support in-browser SSR.` +
-          ` Rendering in client mode instead.`,
-      )
-    }
-  }
 
   try {
     const mainFile = store.mainFile

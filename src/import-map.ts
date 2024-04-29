@@ -1,39 +1,9 @@
-import { computed, version as currentVersion, ref } from 'vue'
+import { computed } from 'vue'
 
-export function useVueImportMap(
-  defaults: {
-    runtimeDev?: string | (() => string)
-    runtimeProd?: string | (() => string)
-    serverRenderer?: string | (() => string)
-    vueVersion?: string | null
-  } = {},
-) {
-  function normalizeDefaults(defaults?: string | (() => string)) {
-    if (!defaults) return
-    return typeof defaults === 'string' ? defaults : defaults()
-  }
-
-  const productionMode = ref(false)
-  const vueVersion = ref<string | null>(defaults.vueVersion || null)
+export function useVueImportMap() {
   const importMap = computed<ImportMap>(() => {
-    const vue =
-      (!vueVersion.value &&
-        normalizeDefaults(
-          productionMode.value ? defaults.runtimeProd : defaults.runtimeDev,
-        )) ||
-      `https://cdn.jsdelivr.net/npm/@vue/runtime-dom@${
-        vueVersion.value || currentVersion
-      }/dist/runtime-dom.esm-browser${productionMode.value ? `.prod` : ``}.js`
-
-    const serverRenderer =
-      (!vueVersion.value && normalizeDefaults(defaults.serverRenderer)) ||
-      `https://cdn.jsdelivr.net/npm/@vue/server-renderer@${
-        vueVersion.value || currentVersion
-      }/dist/server-renderer.esm-browser.js`
     return {
       imports: {
-        // vue,
-        // 'vue/server-renderer': serverRenderer,
         react: 'https://esm.sh/react@18.2.0?dev',
         'react/': 'https://esm.sh/*react@18.2.0&dev/',
         'react-dom': 'https://esm.sh/react-dom@18.2.0?external=react&dev',
@@ -43,10 +13,7 @@ export function useVueImportMap(
   })
 
   return {
-    productionMode,
     importMap,
-    vueVersion,
-    defaultVersion: currentVersion,
   }
 }
 

@@ -10,18 +10,10 @@ window.process = { env: {} }
 const App = {
   setup() {
     const query = new URLSearchParams(location.search)
-    const { importMap: builtinImportMap, vueVersion } = useVueImportMap({
-      runtimeDev: import.meta.env.PROD
-        ? undefined
-        : `${location.origin}/src/vue-dev-proxy`,
-      serverRenderer: import.meta.env.PROD
-        ? undefined
-        : `${location.origin}/src/vue-server-renderer-dev-proxy`,
-    })
+    const { importMap: builtinImportMap } = useVueImportMap()
     const store = (window.store = useStore(
       {
         builtinImportMap,
-        vueVersion,
         showOutput: ref(query.has('so')),
         outputMode: ref((query.get('om') as OutputModes) || 'preview'),
       },

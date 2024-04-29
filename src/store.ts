@@ -4,11 +4,9 @@ import {
   computed,
   reactive,
   ref,
-  shallowRef,
   watch,
   watchEffect,
 } from 'vue'
-import * as defaultCompiler from 'vue/compiler-sfc'
 import { compileFile } from './transform'
 import { atou, utoa } from './utils'
 import type {
@@ -41,8 +39,6 @@ export function useStore(
     showOutput = ref(false),
     outputMode = ref('preview'),
     sfcOptions = ref({}),
-    compiler = shallowRef(defaultCompiler),
-    vueVersion = ref(null),
 
     locale = ref(),
     typescriptVersion = ref('latest'),
@@ -52,9 +48,7 @@ export function useStore(
   serializedState?: string,
 ): ReplStore {
   if (!builtinImportMap) {
-    ;({ importMap: builtinImportMap, vueVersion } = useVueImportMap({
-      vueVersion: vueVersion.value,
-    }))
+    ;({ importMap: builtinImportMap } = useVueImportMap())
   }
   const loading = ref(false)
 
@@ -76,7 +70,6 @@ export function useStore(
         typescriptVersion.value,
         locale.value,
         dependencyVersion.value,
-        vueVersion.value,
       ],
       () => reloadLanguageTools.value?.(),
       { deep: true },
@@ -88,25 +81,6 @@ export function useStore(
         setImportMap(mergeImportMap(getImportMap(), builtinImportMap.value))
       },
       { deep: true, immediate: true },
-    )
-
-    watch(
-      vueVersion,
-      async (version) => {
-        if (version) {
-          const compilerUrl = `https://cdn.jsdelivr.net/npm/@vue/compiler-sfc@${version}/dist/compiler-sfc.esm-browser.js`
-          loading.value = true
-          compiler.value = await import(/* @vite-ignore */ compilerUrl).finally(
-            () => (loading.value = false),
-          )
-          console.info(`[@vue/repl] Now using Vue version: ${version}`)
-        } else {
-          // reset to default
-          compiler.value = defaultCompiler
-          console.info(`[@vue/repl] Now using default Vue version`)
-        }
-      },
-      { immediate: true },
     )
 
     watch(
@@ -264,7 +238,6 @@ export function useStore(
         delete files[importMapFile]
       }
     }
-    if (vueVersion.value) files._version = vueVersion.value
     return '#' + utoa(JSON.stringify(files))
   }
   const deserialize: ReplStore['deserialize'] = (serializedState: string) => {
@@ -273,7 +246,6 @@ export function useStore(
     const saved = JSON.parse(atou(serializedState))
     for (const filename in saved) {
       if (filename === '_version') {
-        vueVersion.value = saved[filename]
       } else {
         setFile(files.value, filename, saved[filename])
       }
@@ -342,9 +314,7 @@ export function useStore(
     showOutput,
     outputMode,
     sfcOptions,
-    compiler,
     loading,
-    vueVersion,
 
     locale,
     typescriptVersion,
@@ -402,10 +372,6 @@ export type StoreState = ToRefs<{
   showOutput: boolean
   outputMode: OutputModes
   sfcOptions: SFCOptions
-  /** `@vue/compiler-sfc` */
-  compiler: typeof defaultCompiler
-  /* only apply for compiler-sfc */
-  vueVersion: string | null
 
   // volar-related
   locale: string | undefined
@@ -441,8 +407,6 @@ export type Store = Pick<
   | 'showOutput'
   | 'outputMode'
   | 'sfcOptions'
-  | 'compiler'
-  | 'vueVersion'
   | 'locale'
   | 'typescriptVersion'
   | 'dependencyVersion'
