@@ -1,7 +1,7 @@
 import type { Component, InjectionKey } from 'vue'
 import type { Store } from './store'
 
-export type EditorMode = 'js' | 'css' | 'ssr'
+export type EditorMode = 'js' | 'css'
 export interface EditorProps {
   value: string
   filename: string

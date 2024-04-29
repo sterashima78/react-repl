@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { transform } from 'sucrase'
+
 import Message from '../Message.vue'
 import {
   type Ref,
@@ -16,7 +18,7 @@ import { compileModulesForPreview } from './moduleCompiler'
 import type { Props } from '../Repl.vue'
 import { injectKeyStore } from '../../src/types'
 
-const props = defineProps<{ show: boolean; ssr: boolean }>()
+const props = defineProps<{ show: boolean }>()
 
 const store = inject(injectKeyStore)!
 const clearConsole = inject<Ref<boolean>>('clear-console')!
@@ -178,7 +180,6 @@ async function updatePreview() {
   runtimeError.value = null
   runtimeWarning.value = null
 
-  let isSSR = props.ssr
   if (store.vueVersion) {
     const [major, minor, patch] = store.vueVersion
       .split('.')
@@ -188,41 +189,11 @@ async function updatePreview() {
         `The selected version of Vue (${store.vueVersion}) does not support in-browser SSR.` +
           ` Rendering in client mode instead.`,
       )
-      isSSR = false
     }
   }
 
   try {
     const mainFile = store.mainFile
-
-    // if SSR, generate the SSR bundle and eval it to render the HTML
-    if (isSSR && mainFile.endsWith('.vue')) {
-      const ssrModules = compileModulesForPreview(store, true)
-      console.info(
-        `[@vue/repl] successfully compiled ${ssrModules.length} modules for SSR.`,
-      )
-      await proxy.eval([
-        `const __modules__ = {};`,
-        ...ssrModules,
-        `import { renderToString as _renderToString } from 'vue/server-renderer'
-         import { createSSRApp as _createApp } from 'vue'
-         const AppComponent = __modules__["${mainFile}"].default
-         AppComponent.name = 'Repl'
-         const app = _createApp(AppComponent)
-         if (!app.config.hasOwnProperty('unwrapInjectedRef')) {
-           app.config.unwrapInjectedRef = true
-         }
-         app.config.warnHandler = () => {}
-         window.__ssr_promise__ = _renderToString(app).then(html => {
-           document.body.innerHTML = '<div id="app">' + html + '</div>' + \`${
-             previewOptions?.bodyHTML || ''
-           }\`
-         }).catch(err => {
-           console.error("SSR Error", err)
-         })
-        `,
-      ])
-    }
 
     // compile code to simulated module system
     const modules = compileModulesForPreview(store)
@@ -235,39 +206,31 @@ async function updatePreview() {
     const codeToEval = [
       `window.__modules__ = {};window.__css__ = [];` +
         `if (window.__app__) window.__app__.unmount();` +
-        (isSSR
-          ? ``
-          : `document.body.innerHTML = '<div id="app"></div>' + \`${
-              previewOptions?.bodyHTML || ''
-            }\``),
+        `document.body.innerHTML = '<div id="app"></div>' + \`${previewOptions?.bodyHTML || ''}\``,
       ...modules,
       `document.querySelectorAll('style[css]').forEach(el => el.remove())
         document.head.insertAdjacentHTML('beforeend', window.__css__.map(s => \`<style css>\${s}</style>\`).join('\\n'))`,
     ]
 
-    // if main file is a vue file, mount it.
-    if (mainFile.endsWith('.vue')) {
+    // if main file is a react file, mount it.
+    if (mainFile.endsWith('.tsx') || mainFile.endsWith('.jsx')) {
       codeToEval.push(
-        `import { ${
-          isSSR ? `createSSRApp` : `createApp`
-        } as _createApp } from "vue"
+        transform(
+          `
+        import { createRoot } from 'react-dom/client'
         ${previewOptions?.customCode?.importCode || ''}
         const _mount = () => {
           const AppComponent = __modules__["${mainFile}"].default
-          AppComponent.name = 'Repl'
-          const app = window.__app__ = _createApp(AppComponent)
-          if (!app.config.hasOwnProperty('unwrapInjectedRef')) {
-            app.config.unwrapInjectedRef = true
-          }
-          app.config.errorHandler = e => console.error(e)
+          const app = window.__app__ = createRoot(document.getElementById('app'))
           ${previewOptions?.customCode?.useCode || ''}
-          app.mount('#app')
+          app.render(<AppComponent />)
         }
-        if (window.__ssr_promise__) {
-          window.__ssr_promise__.then(_mount)
-        } else {
-          _mount()
-        }`,
+        _mount()`,
+          {
+            transforms: ['jsx', 'typescript'],
+            jsxRuntime: 'automatic',
+          },
+        ).code,
       )
     }
 

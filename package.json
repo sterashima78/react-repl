@@ -1,7 +1,8 @@
 {
-  "name": "@vue/repl",
+  "name": "@sterashima78/react-repl",
+  "private": true,
   "version": "4.1.1",
-  "description": "Vue component for editing Vue components",
+  "description": "Vue component for editing React components",
   "packageManager": "pnpm@8.15.4",
   "type": "module",
   "main": "dist/ssr-stub.js",

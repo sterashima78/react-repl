@@ -10,21 +10,18 @@ import {
 } from 'vue/compiler-sfc'
 import type { ExportSpecifier, Identifier, Node } from '@babel/types'
 
-export function compileModulesForPreview(store: Store, isSSR = false) {
+export function compileModulesForPreview(store: Store) {
   const seen = new Set<File>()
   const processed: string[] = []
-  processFile(store, store.files[store.mainFile], processed, seen, isSSR)
+  processFile(store, store.files[store.mainFile], processed, seen)
 
-  if (!isSSR) {
-    // also add css files that are not imported
-    for (const filename in store.files) {
-      if (filename.endsWith('.css')) {
-        const file = store.files[filename]
-        if (!seen.has(file)) {
-          processed.push(
-            `\nwindow.__css__.push(${JSON.stringify(file.compiled.css)})`,
-          )
-        }
+  for (const filename in store.files) {
+    if (filename.endsWith('.css')) {
+      const file = store.files[filename]
+      if (!seen.has(file)) {
+        processed.push(
+          `\nwindow.__css__.push(${JSON.stringify(file.compiled.css)})`,
+        )
       }
     }
   }
@@ -43,14 +40,13 @@ function processFile(
   file: File,
   processed: string[],
   seen: Set<File>,
-  isSSR: boolean,
 ) {
   if (seen.has(file)) {
     return []
   }
   seen.add(file)
 
-  if (!isSSR && file.filename.endsWith('.html')) {
+  if (file.filename.endsWith('.html')) {
     return processHtmlFile(store, file.code, file.filename, processed, seen)
   }
 
@@ -58,21 +54,10 @@ function processFile(
     code: js,
     importedFiles,
     hasDynamicImport,
-  } = processModule(
-    store,
-    isSSR ? file.compiled.ssr : file.compiled.js,
-    file.filename,
-  )
-  processChildFiles(
-    store,
-    importedFiles,
-    hasDynamicImport,
-    processed,
-    seen,
-    isSSR,
-  )
+  } = processModule(store, file.compiled.js, file.filename)
+  processChildFiles(store, importedFiles, hasDynamicImport, processed, seen)
   // append css
-  if (file.compiled.css && !isSSR) {
+  if (file.compiled.css) {
     js += `\nwindow.__css__.push(${JSON.stringify(file.compiled.css)})`
   }
 
@@ -86,18 +71,17 @@ function processChildFiles(
   hasDynamicImport: boolean,
   processed: string[],
   seen: Set<File>,
-  isSSR: boolean,
 ) {
   if (hasDynamicImport) {
     // process all files
     for (const file of Object.values(store.files)) {
       if (seen.has(file)) continue
-      processFile(store, file, processed, seen, isSSR)
+      processFile(store, file, processed, seen)
     }
   } else if (importedFiles.size > 0) {
     // crawl child imports
     for (const imported of importedFiles) {
-      processFile(store, store.files[imported], processed, seen, isSSR)
+      processFile(store, store.files[imported], processed, seen)
     }
   }
 }

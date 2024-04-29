@@ -20,8 +20,8 @@ import type { OutputModes } from './types'
 import type { editor } from 'monaco-editor-core'
 import { type ImportMap, mergeImportMap, useVueImportMap } from './import-map'
 
-import welcomeSFCCode from './template/welcome.vue?raw'
-import newSFCCode from './template/new-sfc.vue?raw'
+import welcomeSFCCode from './template/welcome.tsx?raw'
+import newSFCCode from './template/new.tsx?raw'
 
 export const importMapFile = 'import-map.json'
 export const tsconfigFile = 'tsconfig.json'
@@ -30,7 +30,7 @@ export function useStore(
   {
     files = ref(Object.create(null)),
     activeFilename = undefined!, // set later
-    mainFile = ref('src/App.vue'),
+    mainFile = ref('src/App.tsx'),
     template = ref({
       welcomeSFC: welcomeSFCCode,
       newSFC: newSFCCode,
@@ -460,7 +460,6 @@ export class File {
   compiled = {
     js: '',
     css: '',
-    ssr: '',
   }
   editorViewState: editor.ICodeEditorViewState | null = null
 

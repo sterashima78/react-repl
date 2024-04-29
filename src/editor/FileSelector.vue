@@ -15,7 +15,7 @@ const pending = ref<boolean | string>(false)
  * Text shown in the input box when editing a file's name
  * This is a display name so it should always strip off the `src/` prefix.
  */
-const pendingFilename = ref('Comp.vue')
+const pendingFilename = ref('Comp.tsx')
 const showTsConfig = inject<Ref<boolean>>('tsconfig')
 const showImportMap = inject<Ref<boolean>>('import-map')
 const files = computed(() =>
@@ -29,7 +29,7 @@ const files = computed(() =>
 
 function startAddFile() {
   let i = 0
-  let name = `Comp.vue`
+  let name = `Comp.tsx`
 
   while (true) {
     let hasConflict = false
@@ -63,9 +63,9 @@ function doneNameFile() {
   const filename = 'src/' + pendingFilename.value
   const oldFilename = pending.value === true ? '' : pending.value
 
-  if (!/\.(vue|js|ts|css|json)$/.test(filename)) {
+  if (!/\.(vue|js|ts|css|json|tsx|jsx)$/.test(filename)) {
     store.errors = [
-      `Playground only supports *.vue, *.js, *.ts, *.css, *.json files.`,
+      `Playground only supports *.vue, *.js, *.ts, *.css, *.json, *.jsx, *.tsx files.`,
     ]
     return
   }

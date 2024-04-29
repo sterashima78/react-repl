@@ -29,24 +29,7 @@ const App = {
       },
       location.hash,
     ))
-    console.info(store)
-
     watchEffect(() => history.replaceState({}, '', store.serialize()))
-
-    // setTimeout(() => {
-    //   store.setFiles(
-    //     {
-    //       'src/index.html': '<h1>yo</h1>',
-    //       'src/main.js': 'document.body.innerHTML = "<h1>hello</h1>"',
-    //       'src/foo.js': 'document.body.innerHTML = "<h1>hello</h1>"',
-    //       'src/bar.js': 'document.body.innerHTML = "<h1>hello</h1>"',
-    //       'src/baz.js': 'document.body.innerHTML = "<h1>hello</h1>"',
-    //     },
-    //     'src/index.html',
-    //   )
-    // }, 1000)
-
-    // store.vueVersion = '3.4.1'
     const theme = ref<'light' | 'dark'>('dark')
     window.theme = theme
     const previewTheme = ref(false)
@@ -58,15 +41,6 @@ const App = {
         theme: theme.value,
         previewTheme: previewTheme.value,
         editor: MonacoEditor,
-        // layout: 'vertical',
-        ssr: true,
-        sfcOptions: {
-          script: {
-            // inlineTemplate: false
-          },
-        },
-        // showCompileOutput: false,
-        // showImportMap: false
       })
   },
 }

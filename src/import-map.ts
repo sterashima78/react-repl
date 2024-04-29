@@ -32,8 +32,12 @@ export function useVueImportMap(
       }/dist/server-renderer.esm-browser.js`
     return {
       imports: {
-        vue,
-        'vue/server-renderer': serverRenderer,
+        // vue,
+        // 'vue/server-renderer': serverRenderer,
+        react: 'https://esm.sh/react@18.2.0?dev',
+        'react/': 'https://esm.sh/*react@18.2.0&dev/',
+        'react-dom': 'https://esm.sh/react-dom@18.2.0?external=react&dev',
+        'react-dom/': 'https://esm.sh/*react-dom@18.2.0&external=react&dev/',
       },
     }
   })
