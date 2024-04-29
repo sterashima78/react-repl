@@ -10,6 +10,7 @@ export default defineConfig({
       },
     }),
   ],
+  base: '/react-repl/',
   resolve: {
     alias: {
       '@vue/compiler-dom': '@vue/compiler-dom/dist/compiler-dom.cjs.js',

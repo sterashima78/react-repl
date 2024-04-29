@@ -1,0 +1,36 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+      - name: install
+        run: pnpm i
+      - name: build
+        run: pnpm build-preview
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
