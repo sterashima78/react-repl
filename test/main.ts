@@ -3,8 +3,6 @@ import { createApp, h, ref, watchEffect } from 'vue'
 import { type OutputModes, Repl, useStore, useVueImportMap } from '../src'
 // @ts-ignore
 import MonacoEditor from '../src/editor/MonacoEditor.vue'
-// @ts-ignore
-import CodeMirrorEditor from '../src/editor/CodeMirrorEditor.vue'
 
 const window = globalThis.window as any
 window.process = { env: {} }

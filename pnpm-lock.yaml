@@ -14,9 +14,6 @@ devDependencies:
   '@shikijs/monaco':
     specifier: ^1.1.7
     version: 1.1.7
-  '@types/codemirror':
-    specifier: ^5.60.15
-    version: 5.60.15
   '@types/hash-sum':
     specifier: ^1.0.2
     version: 1.0.2
@@ -44,9 +41,6 @@ devDependencies:
   bumpp:
     specifier: ^9.4.0
     version: 9.4.0
-  codemirror:
-    specifier: ^5.65.16
-    version: 5.65.16
   conventional-changelog-cli:
     specifier: ^4.1.0
     version: 4.1.0
@@ -738,12 +732,6 @@ packages:
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
     dev: true
 
-  /@types/codemirror@5.60.15:
-    resolution: {integrity: sha512-dTOvwEQ+ouKJ/rE9LT1Ue2hmP6H1mZv5+CCnNWu2qtiOe2LQa9lCprEY20HxiDmV/Bxh+dXjywmy5aKvoGjULA==}
-    dependencies:
-      '@types/tern': 0.23.9
-    dev: true
-
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
     dev: true
@@ -768,12 +756,6 @@ packages:
 
   /@types/semver@7.5.8:
     resolution: {integrity: sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==}
-    dev: true
-
-  /@types/tern@0.23.9:
-    resolution: {integrity: sha512-ypzHFE/wBzh+BlH6rrBgS5I/Z7RD21pGhZ2rltb/+ZrVM1awdZwjx7hE5XfuYgHWk9uvV5HLZN3SloevCAp3Bw==}
-    dependencies:
-      '@types/estree': 1.0.5
     dev: true
 
   /@typescript-eslint/eslint-plugin@7.1.1(@typescript-eslint/parser@7.1.1)(eslint@9.0.0)(typescript@5.4.2):
@@ -1415,10 +1397,6 @@ packages:
     dependencies:
       slice-ansi: 5.0.0
       string-width: 7.1.0
-    dev: true
-
-  /codemirror@5.65.16:
-    resolution: {integrity: sha512-br21LjYmSlVL0vFCPWPfhzUCT34FM/pAdK7rRIZwa0rrtrIdotvP4Oh4GUHsu2E3IrQMCfRkL/fN3ytMNxVQvg==}
     dev: true
 
   /color-convert@1.9.3:
