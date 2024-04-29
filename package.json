@@ -43,10 +43,7 @@
     "build-preview": "vite build -c vite.preview.config.ts",
     "format": "prettier --write .",
     "lint": "eslint --ext .ts,.vue .",
-    "typecheck": "vue-tsc --noEmit",
-    "release": "bumpp --all",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "prepublishOnly": "npm run build"
+    "typecheck": "vue-tsc --noEmit"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm exec lint-staged --concurrent false"
@@ -56,16 +53,7 @@
       "prettier --write --cache --ignore-unknown"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vuejs/repl.git"
-  },
-  "author": "Evan You",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/vuejs/repl/issues"
-  },
-  "homepage": "https://github.com/vuejs/repl#readme",
   "devDependencies": {
     "@babel/types": "^7.24.0",
     "@rollup/plugin-replace": "^5.0.5",
